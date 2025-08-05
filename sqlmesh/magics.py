@@ -608,7 +608,16 @@ class SQLMeshMagics(Magics):
     def fetchdf(self, context: Context, line: str, sql: str) -> None:
         """Fetches a dataframe from sql, optionally storing it in a variable."""
         args = parse_argstring(self.fetchdf, line)
-        df = context.fetchdf(sql)
+
+        # Check if we're using Athena and use PandasCursor directly
+        if (
+            hasattr(context.engine_adapter, "DIALECT")
+            and context.engine_adapter.DIALECT == "athena"
+        ):
+            df = self._fetchdf_athena_pandas_cursor(context, sql)
+        else:
+            df = context.fetchdf(sql)
+
         if args.df_var:
             self._shell.user_ns[args.df_var] = df
         self.display(df)
