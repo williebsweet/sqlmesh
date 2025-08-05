@@ -1151,7 +1151,6 @@ class SQLMeshMagics(Magics):
         """Special implementation for Athena using PandasCursor with SQLGlot transpilation"""
 
         try:
-            context.console.log_status_update("Importing PandasCursor")
             from pyathena.pandas.cursor import PandasCursor
             from pyathena import connect
         except ImportError as e:
